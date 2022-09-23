@@ -1,15 +1,35 @@
 {
-  "name": "@tournant/parse-blog",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@inframanufaktur/blog-parser",
+  "version": "0.0.0",
+  "description": "A utility to parse posts from blog homepages",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "scraping",
+    "blog"
+  ],
+  "author": {
+    "name": "Cyber Design Inframanufaktur",
+    "email": "127.0.0.1@inframanufaktur.org",
+    "url": "https://www.inframanufaktur.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:inframanufaktur/blog-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/inframanufaktur/blog-parser/issues"
+  },
+  "homepage": "https://github.com/inframanufaktur/blog-parser",
+  "license": "MIT",
   "dependencies": {
+    "chalk": "^5.0.1",
+    "got": "^12.5.0",
     "linkedom": "^0.14.16"
   }
 }
