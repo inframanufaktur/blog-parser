@@ -10,6 +10,7 @@ function parseSiteContent(rawContent) {
 
 /**
  *
+ * @TODO Find way to check for JSON feeds
  *
  * @param {Document} document
  */
