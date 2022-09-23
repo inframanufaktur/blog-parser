@@ -35,5 +35,10 @@
     "chalk": "^5.0.1",
     "got": "^12.5.0",
     "linkedom": "^0.14.16"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1"
   }
 }
