@@ -2,14 +2,31 @@ import { parseHTML } from 'linkedom'
 import got from 'got'
 import chalk from 'chalk'
 
-let postInfo = {}
+let pageInfo = {}
 
 function parseSiteContent(rawContent) {
   return parseHTML(rawContent).document
 }
 
+/**
+ *
+ *
+ * @param {Document} document
+ */
+function getFeeds(document) {
+  const feedTypes = ['application/atom+xml', 'application/rss+xml']
+
+  let feeds = []
+
+  feedTypes.forEach((type) => {
+    feeds.push([...document.head.querySelectorAll(`[type="${type}"]`)])
+  })
+
+  return feeds.flat().map((feed) => new URL(feed.href, pageInfo.url))
+}
+
 function getSiteContent(document) {
-  const { elements } = postInfo
+  const { elements } = pageInfo
 
   const posts = document.querySelectorAll(elements.posts)
 
@@ -25,6 +42,7 @@ function getSiteContent(document) {
 
   return {
     posts,
+    feeds: getFeeds(document),
     meta: {
       title: document.title.trim(),
     },
@@ -32,11 +50,11 @@ function getSiteContent(document) {
 }
 
 function getPostContent(post) {
-  const { elements } = postInfo
+  const { elements } = pageInfo
 
   let postInformation = {
     title: post.querySelector(elements.postTitle).innerText,
-    url: new URL(post.querySelector(elements.postURL).href, postInfo.url),
+    url: new URL(post.querySelector(elements.postURL).href, pageInfo.url),
     date: new Date(post.querySelector(elements.postDate).innerText),
   }
 
@@ -55,13 +73,17 @@ function parsePosts(posts) {
   return [...posts].map((post) => getPostContent(post))
 }
 
-export async function getBlog({ url, elements }) {
-  postInfo = { url, elements }
+export async function getBlog(infos) {
+  pageInfo = infos
 
-  let data = await got.get(url).text()
+  let data = await got.get(infos.url).text()
   const document = parseSiteContent(data)
 
-  const { posts, meta } = getSiteContent(document, elements)
+  const { posts, meta, feeds } = getSiteContent(document)
 
-  return { posts: parsePosts(posts), meta }
+  return {
+    posts: parsePosts(posts),
+    meta,
+    feeds,
+  }
 }
