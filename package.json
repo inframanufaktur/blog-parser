@@ -1,6 +1,6 @@
 {
   "name": "@inframanufaktur/blog-parser",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A utility to parse posts from blog homepages",
   "main": "index.js",
   "scripts": {
