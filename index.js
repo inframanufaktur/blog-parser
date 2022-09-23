@@ -1,13 +1,17 @@
-const { parseHTML } = require('linkedom')
-const got = require('got')
-const chalk = require('chalk')
+import { parseHTML } from 'linkedom'
+import got from 'got'
+import chalk from 'chalk'
+
+let postInfo = {}
 
 function parseSiteContent(rawContent) {
   return parseHTML(rawContent).document
 }
 
-function getSiteContent(document, elementSelectors) {
-  const posts = document.querySelectorAll(elementSelectors.posts)
+function getSiteContent(document) {
+  const { elements } = postInfo
+
+  const posts = document.querySelectorAll(elements.posts)
 
   if (posts.length === 0) {
     console.warn(
@@ -27,25 +31,37 @@ function getSiteContent(document, elementSelectors) {
   }
 }
 
-function getPostContent(post, elementSelectors) {
-  return {
-    title: post.querySelector(elementSelectors.postTitle).innerText,
-    url: new URL(post.querySelector(elementSelectors.postURL).href),
-    date: new Date(post.querySelector(elementSelectors.postDate).innerText),
+function getPostContent(post) {
+  const { elements } = postInfo
+
+  let postInformation = {
+    title: post.querySelector(elements.postTitle).innerText,
+    url: new URL(post.querySelector(elements.postURL).href, postInfo.url),
+    date: new Date(post.querySelector(elements.postDate).innerText),
   }
+
+  if (elements.postIntro) {
+    Object.defineProperty(postInformation, 'postIntro', {
+      enumerable: true,
+      writable: false,
+      value: post.querySelector(elements.postIntro)?.innerHTML,
+    })
+  }
+
+  return postInformation
 }
 
-function parsePosts(posts, elementSelectors) {
-  return [...posts].map((post) => getPostContent(post, elementSelectors))
+function parsePosts(posts) {
+  return [...posts].map((post) => getPostContent(post))
 }
 
-async function getBlog({ url, elements }) {
+export async function getBlog({ url, elements }) {
+  postInfo = { url, elements }
+
   let data = await got.get(url).text()
   const document = parseSiteContent(data)
 
   const { posts, meta } = getSiteContent(document, elements)
 
-  return { parsedPosts: parsePosts(posts), meta }
+  return { posts: parsePosts(posts), meta }
 }
-
-module.exports = { getBlog }
