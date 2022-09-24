@@ -18,11 +18,14 @@ const blogData = {
     postTitle: '.c-card__title',
     postURL: '.c-card__title',
     postDate: '.c-card__extra-meta',
+    postIntro: '.c-card__intro',
   },
 }
 ```
 
 All items in `elements` must be valid CSS selector strings, as they are used by `querySelector`.
+
+Note: `postIntro` can be omitted or set to `null`. `postDate` can be `null`.
 
 The result of `postURL` will parsed using `new URL` and `postDate` using `new Date`.
 
@@ -35,6 +38,51 @@ await getBlog(blogData)
 // returns an Array of posts and, additionally, meta data of the site
 ```
 
+### What it returns
+
+#### Posts
+
+An array of all posts on the page.
+
+```js
+[
+  {
+    title: <String>,
+    url: <URL>,
+    date: <Date | null>,
+    postIntro?: <String>
+  }
+]
+```
+
+Note: `date` might be `null` if no element selector was given or if the date on the page couldn’t be parsed with `new Date()`.
+
+`postIntro` is only included if `elements.postIntro` was provided.
+
+#### Meta
+
+```js
+{
+  title: <String>
+}
+```
+
+#### Feeds
+
+Get all `application/atom+xml` and `application/rss+xml` feeds. Returns an array of URL interfaces.
+
+Note: Does not work for JSON feeds at the moment.
+
+```js
+[
+  <URL>
+]
+```
+
+### Empty pages
+
 The module shows a warning in the console if no posts could be found using the `elements.posts` selector string.
+
+---
 
 A project by Cyber Design Inframanufaktur. Copyleft 2022.
