@@ -4,6 +4,12 @@ import chalk from 'chalk'
 
 let pageInfo = {}
 
+function consoleWarning(message) {
+  console.warn(
+    chalk.yellow(`${chalk.bold('@inframanufaktur/parse-blog')}: ${message}`),
+  )
+}
+
 function parseSiteContent(rawContent) {
   return parseHTML(rawContent).document
 }
@@ -26,19 +32,48 @@ function getFeeds(document) {
   return feeds.flat().map((feed) => new URL(feed.href, pageInfo.url))
 }
 
+/**
+ * Make sense of wibbly wobbly timey wimey things, aka dates on websites
+ *
+ * @param {HTMLElement} parent
+ * @param {HTMLElement | null} elementSelector
+ *
+ * @return {Date | null}
+ */
+function getPostDate(parent, elementSelector) {
+  // don't expect posts to have a usable date
+  if (elementSelector === null) return null
+
+  const $element = parent.querySelector(elementSelector)
+
+  if ($element === null) {
+    consoleWarning(
+      `No element for \`postDate\` found using selector «${elementSelector}». Please check markup structure.`,
+    )
+
+    return null
+  }
+
+  let date
+
+  if ($element.hasAttribute('dateTime')) {
+    date = new Date($element.getAttribute('dateTime'))
+  } else {
+    date = new Date($element.innerText)
+  }
+
+  if (date.toString() === 'Invalid date') return null
+
+  return date
+}
+
 function getSiteContent(document) {
   const { elements } = pageInfo
 
   const posts = document.querySelectorAll(elements.posts)
 
   if (posts.length === 0) {
-    console.warn(
-      chalk.yellow(
-        `${chalk.bold(
-          '@inframanufaktur/parse-blog',
-        )}: Could not find any posts on «${document.title.trim()}»`,
-      ),
-    )
+    consoleWarning(`Could not find any posts on «${document.title.trim()}»`)
   }
 
   return {
@@ -56,7 +91,7 @@ function getPostContent(post) {
   let postInformation = {
     title: post.querySelector(elements.postTitle).innerText,
     url: new URL(post.querySelector(elements.postURL).href, pageInfo.url),
-    date: new Date(post.querySelector(elements.postDate).innerText),
+    date: getPostDate(post, elements.postDate),
   }
 
   if (elements.postIntro) {
