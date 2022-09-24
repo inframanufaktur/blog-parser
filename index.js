@@ -1,84 +1,19 @@
 import { parseHTML } from 'linkedom'
 import got from 'got'
-import chalk from 'chalk'
+import { getPosts, getFeeds, getPostDate } from './util/elements.js'
 
 let pageInfo = {}
-
-function consoleWarning(message) {
-  console.warn(
-    chalk.yellow(`${chalk.bold('@inframanufaktur/parse-blog')}: ${message}`),
-  )
-}
 
 function parseSiteContent(rawContent) {
   return parseHTML(rawContent).document
 }
 
-/**
- *
- * @TODO Find way to check for JSON feeds
- *
- * @param {Document} document
- */
-function getFeeds(document) {
-  const feedTypes = ['application/atom+xml', 'application/rss+xml']
-
-  let feeds = []
-
-  feedTypes.forEach((type) => {
-    feeds.push([...document.head.querySelectorAll(`[type="${type}"]`)])
-  })
-
-  return feeds.flat().map((feed) => new URL(feed.href, pageInfo.url))
-}
-
-/**
- * Make sense of wibbly wobbly timey wimey things, aka dates on websites
- *
- * @param {HTMLElement} parent
- * @param {HTMLElement | null} elementSelector
- *
- * @return {Date | null}
- */
-function getPostDate(parent, elementSelector) {
-  // don't expect posts to have a usable date
-  if (elementSelector === null) return null
-
-  const $element = parent.querySelector(elementSelector)
-
-  if ($element === null) {
-    consoleWarning(
-      `No element for \`postDate\` found using selector «${elementSelector}». Please check markup structure.`,
-    )
-
-    return null
-  }
-
-  let date
-
-  if ($element.hasAttribute('dateTime')) {
-    date = new Date($element.getAttribute('dateTime'))
-  } else {
-    date = new Date($element.innerText)
-  }
-
-  if (date.toString() === 'Invalid date') return null
-
-  return date
-}
-
 function getSiteContent(document) {
   const { elements } = pageInfo
 
-  const posts = document.querySelectorAll(elements.posts)
-
-  if (posts.length === 0) {
-    consoleWarning(`Could not find any posts on «${document.title.trim()}»`)
-  }
-
   return {
-    posts,
-    feeds: getFeeds(document),
+    posts: getPosts(document, elements.posts),
+    feeds: getFeeds(document, pageInfo.url),
     meta: {
       title: document.title.trim(),
     },
