@@ -1,4 +1,10 @@
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat.js'
+
 import { consoleWarning } from './notification.js'
+
+dayjs.extend(customParseFormat)
+// dayjs.extend(utc)
 
 export function getPosts(document, selector) {
   const posts = document.querySelectorAll(selector)
@@ -36,7 +42,11 @@ export function getFeeds(document, baseURL = '') {
  *
  * @return {Date | null}
  */
-export function getPostDate(parent, elementSelector) {
+export async function getPostDate(
+  parent,
+  elementSelector,
+  { locale = null, customParseFormat = false } = {},
+) {
   // don't expect posts to have a usable date
   if (elementSelector === null) return null
 
@@ -50,17 +60,31 @@ export function getPostDate(parent, elementSelector) {
     return null
   }
 
-  let date
+  if (locale) {
+    await import(`dayjs/locale/${locale}.js`)
 
-  if ($element.hasAttribute('datetime')) {
-    date = new Date($element.getAttribute('datetime'))
-  } else if ($element.hasAttribute('dateTime')) {
-    date = new Date($element.getAttribute('dateTime'))
-  } else {
-    date = new Date($element.innerText)
+    dayjs.locale(locale)
   }
 
-  if (date.toString().toLowerCase() === 'invalid date') return null
+  let dateString
 
-  return date
+  if ($element.hasAttribute('datetime')) {
+    dateString = $element.getAttribute('datetime')
+  } else if ($element.hasAttribute('dateTime')) {
+    dateString = $element.getAttribute('dateTime')
+  } else {
+    dateString = $element.innerText
+  }
+
+  let date
+
+  if (customParseFormat) {
+    date = dayjs(dateString, customParseFormat, locale)
+  } else {
+    date = dayjs(dateString)
+  }
+
+  if (!date.isValid()) return null
+
+  return date.toDate()
 }

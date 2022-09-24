@@ -29,6 +29,35 @@ Note: `postIntro` can be omitted or set to `null`. `postDate` can be `null`.
 
 The result of `postURL` will parsed using `new URL` and `postDate` using `new Date`.
 
+### Parsing Dates
+
+Additionally to the basic format above, you can add date handling.
+
+```js
+const blogData = {
+  url: 'https://www.somewebsite.com/blog/',
+  elements: {
+    posts: 'article.c-listing__item',
+    postTitle: '.c-card__title',
+    postURL: '.c-card__title',
+    postDate: '.c-card__extra-meta',
+    postIntro: '.c-card__intro',
+  },
+  dateParseOptions: {
+    locale: 'de',
+    customParseFormat: 'MMMM YYYY'
+  }
+}
+```
+
+The date parsing uses [dayjs](https://day.js.org/) to allow for more flexibility than the native JavaScript Date.
+
+Say, you are scraping a German website which only displays «März 2022» as their date. Thanks to dayjs’ [`customParseFormat` plugin](https://day.js.org/docs/en/plugin/custom-parse-format) we can make sense of this.
+
+Please check the [list of all available parsing options](https://day.js.org/docs/en/parse/string-format#list-of-all-available-parsing-tokens) to see how strings can be parsed.
+
+If `locale` is set, this will be imported and used. Check the [list of available locales](https://github.com/iamkun/dayjs/tree/dev/src/locale) if you want to know if your locale is supported.
+
 ## Usage
 
 ```js

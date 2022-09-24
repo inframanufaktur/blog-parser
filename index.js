@@ -20,13 +20,13 @@ function getSiteContent(document) {
   }
 }
 
-function getPostContent(post) {
-  const { elements } = pageInfo
+async function getPostContent(post) {
+  const { elements, dateParseOptions = {} } = pageInfo
 
   let postInformation = {
     title: post.querySelector(elements.postTitle).innerText,
     url: new URL(post.querySelector(elements.postURL).href, pageInfo.url),
-    date: getPostDate(post, elements.postDate),
+    date: await getPostDate(post, elements.postDate, dateParseOptions),
   }
 
   if (elements.postIntro) {
@@ -41,7 +41,7 @@ function getPostContent(post) {
 }
 
 function parsePosts(posts) {
-  return [...posts].map((post) => getPostContent(post))
+  return Promise.all([...posts].map(async (post) => await getPostContent(post)))
 }
 
 export async function getBlog(infos) {
@@ -53,7 +53,7 @@ export async function getBlog(infos) {
   const { posts, meta, feeds } = getSiteContent(document)
 
   return {
-    posts: parsePosts(posts),
+    posts: await parsePosts(posts),
     meta,
     feeds,
   }
