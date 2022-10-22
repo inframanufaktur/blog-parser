@@ -16,6 +16,9 @@ function getSiteContent(document) {
     feeds: getFeeds(document, pageInfo.url),
     meta: {
       title: document.title.trim(),
+      description: document.head
+        .querySelector('[name="description"]')
+        ?.getAttribute('content'),
     },
   }
 }
