@@ -1,6 +1,6 @@
 import { parseHTML } from 'linkedom'
 import got from 'got'
-import { getPosts, getFeeds, getPostDate } from './util/elements.js'
+import { getPosts, getFeeds, getPostDate, getIcon } from './util/elements.js'
 
 let pageInfo = {}
 
@@ -19,6 +19,7 @@ function getSiteContent(document) {
       description: document.head
         .querySelector('[name="description"]')
         ?.getAttribute('content'),
+      icon: getIcon(document, pageInfo.url),
     },
   }
 }

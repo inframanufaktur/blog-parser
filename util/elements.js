@@ -88,3 +88,26 @@ export async function getPostDate(
 
   return date.toDate()
 }
+
+export function getIcon(document, baseURL) {
+  const { head } = document
+
+  const iconRels = ['icon', 'shortcut icon', 'apple-touch-icon']
+  let icon = null
+
+  for (const rel of iconRels) {
+    const found = head.querySelector(`[rel="${rel}"]`)
+
+    if (found) {
+      const { href } = found
+
+      icon = {
+        href: new URL(href, baseURL),
+      }
+
+      break
+    }
+  }
+
+  return icon
+}
