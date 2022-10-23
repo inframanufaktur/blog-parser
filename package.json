@@ -35,13 +35,14 @@
     "chalk": "^5.0.1",
     "dayjs": "^1.11.5",
     "got": "^12.5.0",
-    "linkedom": "^0.14.16"
+    "linkedom": "^0.14.16",
+    "microformats-parser": "^1.4.1"
   },
   "devDependencies": {
     "ava": "^4.3.3",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "esm": "^3.2.25"
+    "sinon": "^14.0.1"
   }
 }
