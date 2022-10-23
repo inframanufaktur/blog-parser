@@ -1,6 +1,4 @@
 export default {
   require: ['esm'],
-  extensions: {
-    js: true,
-  },
+  files: ['**/*.spec.js'],
 }
