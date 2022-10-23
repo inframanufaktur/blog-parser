@@ -1,19 +1,45 @@
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat.js'
 
+import { mf2 } from 'microformats-parser'
+
 import { consoleWarning } from './notification.js'
 
 dayjs.extend(customParseFormat)
-// dayjs.extend(utc)
 
-export function getPosts(document, selector) {
-  const posts = document.querySelectorAll(selector)
+/**
+ *
+ *
+ * @export
+ * @param {Document} document
+ * @param {*} { elements, url, useMicroformats }
+ * @return {[]}
+ */
+export function getPosts(document, { elements, url, useMicroformats }) {
+  if (useMicroformats) {
+    const { items } = mf2(
+      document.body.querySelector('.h-feed, .hfeed').innerHTML,
+      {
+        baseUrl: url,
+      },
+    )
+
+    if (items.length === 0) {
+      consoleWarning(
+        `Could not find any \`h-entry\` items on «${document.title.trim()}»`,
+      )
+    }
+
+    return items
+  }
+
+  const posts = document.querySelectorAll(elements.posts)
 
   if (posts.length === 0) {
     consoleWarning(`Could not find any posts on «${document.title.trim()}»`)
   }
 
-  return posts
+  return [...posts]
 }
 
 /**

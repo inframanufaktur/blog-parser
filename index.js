@@ -1,6 +1,7 @@
 import { parseHTML } from 'linkedom'
 import got from 'got'
-import { getPosts, getFeeds, getPostDate, getIcon } from './util/elements.js'
+import { getPosts, getFeeds, getIcon } from './util/elements.js'
+import { getPostContent, microformatsParser } from './util/parser.js'
 
 let pageInfo = {}
 
@@ -9,10 +10,8 @@ function parseSiteContent(rawContent) {
 }
 
 function getSiteContent(document) {
-  const { elements } = pageInfo
-
   return {
-    posts: getPosts(document, elements.posts),
+    posts: getPosts(document, pageInfo),
     feeds: getFeeds(document, pageInfo.url),
     meta: {
       title: document.title.trim(),
@@ -24,28 +23,16 @@ function getSiteContent(document) {
   }
 }
 
-async function getPostContent(post) {
-  const { elements, dateParseOptions = {} } = pageInfo
-
-  let postInformation = {
-    title: post.querySelector(elements.postTitle).innerText,
-    url: new URL(post.querySelector(elements.postURL).href, pageInfo.url),
-    date: await getPostDate(post, elements.postDate, dateParseOptions),
-  }
-
-  if (elements.postIntro) {
-    Object.defineProperty(postInformation, 'postIntro', {
-      enumerable: true,
-      writable: false,
-      value: post.querySelector(elements.postIntro)?.innerHTML,
-    })
-  }
-
-  return postInformation
-}
-
 function parsePosts(posts) {
-  return Promise.all([...posts].map(async (post) => await getPostContent(post)))
+  const { useMicroformats } = pageInfo
+
+  return Promise.all(
+    [...posts].map(async (post) =>
+      useMicroformats
+        ? microformatsParser(post)
+        : await getPostContent(post, pageInfo),
+    ),
+  )
 }
 
 export async function getBlog(infos) {

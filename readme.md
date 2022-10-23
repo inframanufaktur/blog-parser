@@ -29,6 +29,19 @@ Note: `postIntro` can be omitted or set to `null`. `postDate` can be `null`.
 
 The result of `postURL` will parsed using `new URL` and `postDate` using `new Date`.
 
+### Microformats
+
+If the page you are scraping has embedded spec-conformant microformats, you can omit the `elements` from `parserInfo` and instead set `useMicroformats`:
+
+```js
+const blogData = {
+  url: 'https://ind.ie/blog/',
+  useMicroformats: true,
+}
+```
+
+Note: For this to work, the page must have a) a root element with the `.h-feed` or `.hfeed` class and b) `.h-entry` elements which must have `.p-name` and `.u-url` set. `.dt-published` and `.p-summary` are optional.
+
 ### Parsing Dates
 
 Additionally to the basic format above, you can add date handling.
