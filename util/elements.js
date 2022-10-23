@@ -25,7 +25,7 @@ export function getPosts(document, { elements, url, useMicroformats }) {
       )
     }
 
-    const posts = document.body.querySelector(elements.posts)
+    const posts = elements?.posts && document.body.querySelector(elements.posts)
 
     const { items } = mf2((feedRoot || posts || document.body).innerHTML, {
       baseUrl: url,
