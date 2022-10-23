@@ -58,8 +58,8 @@ const blogData = {
   },
   dateParseOptions: {
     locale: 'de',
-    customParseFormat: 'MMMM YYYY'
-  }
+    customParseFormat: 'MMMM YYYY',
+  },
 }
 ```
 
@@ -105,15 +105,16 @@ Note: `date` might be `null` if no element selector was given or if the date on 
 
 ```js
 {
-  title: <String>
+  title: <String>,
+  icon?: <URL>
 }
 ```
 
 #### Feeds
 
-Get all `application/atom+xml` and `application/rss+xml` feeds. Returns an array of URL interfaces.
+Get all `application/atom+xml`, `application/rss+xml`, and `application/feed+json` feeds. Returns an array of URL interfaces.
 
-Note: Does not work for JSON feeds at the moment.
+Note: Does not work for JSON 1.0 feeds at the moment.
 
 ```js
 [
@@ -123,7 +124,7 @@ Note: Does not work for JSON feeds at the moment.
 
 ### Empty pages
 
-The module shows a warning in the console if no posts could be found using the `elements.posts` selector string.
+The module shows a warning in the console if no posts could be found using the `elements.posts` selector string or `.h-entry` when using microformats.
 
 ---
 
