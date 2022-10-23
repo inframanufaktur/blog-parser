@@ -17,21 +17,26 @@ export function getPosts(document, selector) {
 }
 
 /**
+ * Finds all RSS and ATOM feeds in the `head` of a Document
  *
- * @TODO Find way to check for JSON feeds
+ * @TODO Find way to check for JSON feeds v1.0
  *
- * @param {Document} document
+ * @param {Document} document Document to search for feeds
+ * @param {baseURL} string Base to add to feeds which have a relative `href`
+ *
+ * @returns {URL[]} All found feeds, converted to URLs
  */
-export function getFeeds(document, baseURL = '') {
-  const feedTypes = ['application/atom+xml', 'application/rss+xml']
+export function getFeeds(document, baseURL) {
+  const feedTypes = [
+    'application/atom+xml',
+    'application/rss+xml',
+    'application/feed+json',
+  ]
+  const feedSelector = feedTypes.map((type) => `[type="${type}"]`).join(', ')
 
-  let feeds = []
-
-  feedTypes.forEach((type) => {
-    feeds.push([...document.head.querySelectorAll(`[type="${type}"]`)])
-  })
-
-  return feeds.flat().map((feed) => new URL(feed.href, baseURL))
+  return [...document.head.querySelectorAll(feedSelector)].map(
+    (feed) => new URL(feed.href, baseURL),
+  )
 }
 
 /**
