@@ -17,12 +17,19 @@ dayjs.extend(customParseFormat)
  */
 export function getPosts(document, { elements, url, useMicroformats }) {
   if (useMicroformats) {
-    const { items } = mf2(
-      document.body.querySelector('.h-feed, .hfeed').innerHTML,
-      {
-        baseUrl: url,
-      },
-    )
+    const feedRoot = document.body.querySelector('.h-feed, .hfeed')
+
+    if (!feedRoot) {
+      consoleWarning(
+        'Couldn’t find `.h-feed`. Trying to proceed with `elements.posts` or `document.body`.',
+      )
+    }
+
+    const posts = document.body.querySelector(elements.posts)
+
+    const { items } = mf2((feedRoot || posts || document.body).innerHTML, {
+      baseUrl: url,
+    })
 
     if (items.length === 0) {
       consoleWarning(

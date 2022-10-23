@@ -40,7 +40,20 @@ const blogData = {
 }
 ```
 
-Note: For this to work, the page must have a) a root element with the `.h-feed` or `.hfeed` class and b) `.h-entry` elements which must have `.p-name` and `.u-url` set. `.dt-published` and `.p-summary` are optional.
+Note: For this to work, the page must have `.h-entry` elements which must have `.p-name` and `.u-url` set. `.dt-published` and `.p-summary` are optional.
+
+By default, the parser will search for an element with the `.h-feed` class. If none is found, it will fallback to `document.body`.
+
+Note, however, that this might lead to errors when elements other than `.h-entry` are discovered. To overwrite `document.body` pass `elements.posts` to specify a root element.
+
+````js
+const blogData = {
+  url: 'https://ind.ie/blog/',
+  useMicroformats: true,
+  elements: {
+    posts: '.js-archive'
+  }
+}
 
 ### Parsing Dates
 
@@ -61,7 +74,7 @@ const blogData = {
     customParseFormat: 'MMMM YYYY',
   },
 }
-```
+````
 
 The date parsing uses [dayjs](https://day.js.org/) to allow for more flexibility than the native JavaScript Date.
 
