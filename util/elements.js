@@ -127,25 +127,34 @@ export async function getPostDate(
   return date.toDate()
 }
 
-export function getIcon(document, baseURL) {
+export function getIcons(document, baseURL) {
   const { head } = document
 
-  const iconRels = ['icon', 'shortcut icon', 'apple-touch-icon']
-  let icon = null
+  const iconRels = [
+    'icon',
+    'shortcut icon',
+    'apple-touch-icon',
+    'msapplication-TileImage',
+  ]
+  let icons = []
 
   for (const rel of iconRels) {
-    const found = head.querySelector(`[rel="${rel}"]`)
+    const found = Array.from(head.querySelectorAll(`[rel="${rel}"]`))
 
-    if (found) {
-      const { href } = found
+    if (found.length) {
+      icons = [
+        ...icons,
+        ...found.map((icon) => {
+          const rel = icon.getAttribute('rel')
+          const sizes = icon.getAttribute('sizes')
 
-      icon = {
-        href: new URL(href, baseURL),
-      }
+          return { url: new URL(icon.href, baseURL), rel, sizes }
+        }),
+      ]
 
       break
     }
   }
 
-  return icon
+  return icons
 }
