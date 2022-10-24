@@ -54,6 +54,7 @@ const blogData = {
     posts: '.js-archive'
   }
 }
+```
 
 ### Parsing Dates
 
