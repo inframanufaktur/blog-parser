@@ -67,9 +67,10 @@ export function getFeeds(document, baseURL) {
   ]
   const feedSelector = feedTypes.map((type) => `[type="${type}"]`).join(', ')
 
-  return [...document.head.querySelectorAll(feedSelector)].map(
-    (feed) => new URL(feed.href, baseURL),
-  )
+  return [...document.head.querySelectorAll(feedSelector)].map((feed) => ({
+    url: new URL(feed.href, baseURL),
+    type: feed.getAttribute('type'),
+  }))
 }
 
 /**

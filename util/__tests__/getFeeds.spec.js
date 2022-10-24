@@ -85,5 +85,5 @@ test('converts relative feed href to absolute URLs', (t) => {
     'https://test.com',
   )
 
-  t.is(found[0].toString(), 'https://test.com/feed')
+  t.is(found[0].url.toString(), 'https://test.com/feed')
 })
