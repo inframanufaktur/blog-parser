@@ -116,23 +116,31 @@ Note: `date` might be `null` if no element selector was given or if the date on 
 
 #### Meta
 
+Gets some meta information of the page. Currently:
+
 ```js
 {
   title: <String>,
-  icon?: <URL>
+  description: <String | null>
+  icons: { url: <URL>, rel: <String>, sizes: <String | null> }[]
 }
 ```
 
+`description` is the `content` attribute of `document.head.querySelector(name="description")` and as such should be set on most websites.
+
+`icons` is an array of all `link`s in the head with common icon `rel` attributes.
+
 #### Feeds
 
-Get all `application/atom+xml`, `application/rss+xml`, and `application/feed+json` feeds. Returns an array of URL interfaces.
+Get all `application/atom+xml`, `application/rss+xml`, and `application/feed+json` feeds. Returns an array of URL interfaces as well as what kind of feed it is.
 
 Note: Does not work for JSON 1.0 feeds at the moment.
 
 ```js
-[
-  <URL>
-]
+{
+ url: <URL>,
+ type: <String>
+}[]
 ```
 
 ### Empty pages
