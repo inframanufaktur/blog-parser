@@ -75,6 +75,20 @@ test('finds multiple feeds of different types', (t) => {
   t.is(found.length, 2)
 })
 
+test('returns url and feed type', (t) => {
+  const { url, type } = getFeeds(
+    makeDoc({
+      head: `
+        <link rel="alternate" href="/feed" type="application/rss+xml" />
+      `,
+    }),
+    'https://test.com',
+  )[0]
+
+  t.true(url instanceof URL)
+  t.is(type, 'application/rss+xml')
+})
+
 test('converts relative feed href to absolute URLs', (t) => {
   const found = getFeeds(
     makeDoc({
